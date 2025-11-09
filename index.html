@@ -6,6 +6,38 @@
     <title>Focus Timer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --font-digital: 'Orbitron', sans-serif;
+            --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+            /* 3. NEW: Professional Color Palette (Dark Slate) */
+            --color-bg: #111827; /* bg-slate-900 */
+            --color-bg-light: #1f2937; /* bg-slate-800 */
+            --color-bg-lighter: #374151; /* bg-slate-700 */
+            --color-text: #d1d5db; /* text-gray-300 */
+            --color-text-dim: #6b7280; /* text-gray-500 */
+            --color-border: #4b5563; /* border-gray-600 */
+            
+            /* Accent color (changes with state) */
+            --color-accent: #a5b4fc; /* indigo-300 */
+            --color-accent-dark: #4f46e5; /* indigo-600 */
+            --color-accent-glow: 0 0 15px #4f46e5;
+        }
+
+        /* 4. NEW: State-based Theming */
+        body.state-focus {
+            --color-accent: #fca5a5; /* red-300 */
+            --color-accent-dark: #dc2626; /* red-600 */
+            --color-accent-glow: 0 0 15px #dc2626;
+        }
+        body.state-break {
+            --color-accent: #93c5fd; /* blue-300 */
+            --color-accent-dark: #2563eb; /* blue-600 */
+            --color-accent-glow: 0 0 15px #2563eb;
+        }
+
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -41,6 +73,7 @@
             font-family: var(--font-ui);
             background-color: var(--color-bg);
             color: var(--color-text);
+            transition: background-color 0.4s ease;
             transition: background-color 0.5s ease;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -52,6 +85,48 @@
             font-family: var(--font-digital);
         }
         .timer-text {
+            color: var(--color-accent);
+            text-shadow: var(--color-accent-glow);
+            transition: all 0.4s ease;
+        }
+        .session-text {
+            color: var(--color-text-dim);
+            transition: all 0.4s ease;
+        }
+
+        /* 7. NEW: Button Styles */
+        .btn {
+            @apply py-3 px-5 rounded-lg font-semibold transition-all shadow-md;
+        }
+        .btn-primary {
+            background-color: var(--color-accent-dark);
+            color: white;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.2);
+        }
+        .btn-secondary {
+            background-color: var(--color-bg-lighter);
+            color: var(--color-text);
+        }
+        .btn-secondary:hover {
+            background-color: var(--color-border);
+        }
+        .btn-icon {
+            background-color: transparent;
+            color: var(--color-text-dim);
+            @apply p-3 rounded-lg text-lg;
+        }
+        .btn-icon:hover {
+            color: var(--color-text);
+            background-color: var(--color-bg-light);
+        }
+        
+        /* 8. NEW: Mode Button Styles */
+        .mode-btn {
+            background-color: var(--color-bg-light);
+            color: var(--color-text-dim);
+            @apply py-2 px-6 rounded-lg uppercase tracking-wider text-sm;
             /* Apply gradient to text */
             background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
             background-clip: text;
@@ -112,6 +187,49 @@
             color: var(--color-text);
         }
         .mode-btn-active {
+            background-color: var(--color-accent-dark);
+            color: white !important;
+            font-weight: bold;
+        }
+        
+        /* 9. NEW: Task List Styles */
+        .task-input {
+            @apply w-full bg-gray-900 text-white p-3 rounded-lg border-2 border-transparent focus:outline-none;
+            border-color: var(--color-bg-lighter);
+            transition: border-color 0.3s ease;
+        }
+        .task-input:focus {
+            border-color: var(--color-accent-dark);
+        }
+        
+        .task-item {
+            @apply flex items-center justify-between p-3 rounded-lg mb-2;
+            background-color: var(--color-bg-light);
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .task-item:hover {
+            background-color: var(--color-bg-lighter);
+        }
+        .task-item.selected {
+            border-left-color: var(--color-accent-dark);
+            background-color: var(--color-bg-lighter);
+        }
+        .task-pomodoros {
+            color: var(--color-text-dim);
+            @apply mr-3 text-sm;
+        }
+        
+        /* 10. NEW: Modal Styles */
+        .modal-overlay { @apply fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center; }
+        .modal-content {
+            background-color: var(--color-bg-light);
+            @apply p-8 rounded-lg shadow-xl text-left;
+        }
+        .modal-content label { @apply block text-gray-400 text-sm font-bold mb-2; }
+        .modal-content input {
+            background-color: var(--color-bg-lighter);
+            @apply text-white p-2 rounded w-full mb-4 border border-gray-600;
             background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
             color: white !important;
             box-shadow: 0 4px 20px -5px var(--color-accent-start);
@@ -137,6 +255,8 @@
     <audio id="alarm-sound" src="https://actions.google.com/sounds/v1/impacts/ringing_vessel_solid.ogg" preload="auto"></audio>
     
     <header class="flex justify-between items-center p-4 w-full absolute top-0 left-0">
+        <h1 class="text-xl font-bold digital-font">
+            <i class="fa-solid fa-bolt-lightning" style="color: var(--color-accent); transition: color 0.4s ease;"></i>
         <h1 class="text-xl font-bold digital-font app-title">
             <i class="fa-solid fa-bolt-lightning"></i>
             focus.io
@@ -146,6 +266,24 @@
         </button>
     </header>
 
+    <div class="flex flex-col md:flex-row items-center justify-center h-screen w-full p-4 pt-20">
+
+        <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
+            <div class="flex space-x-2 md:space-x-4 justify-center mb-8">
+                <button id="focus-btn" class="mode-btn digital-font mode-btn-active">Focus</button>
+                <button id="short-btn" class="mode-btn digital-font">Short Break</button>
+                <button id="long-btn" class="mode-btn digital-font">Long Break</button>
+            </div>
+            
+            <div id="current-task-display" class="h-8 text-xl text-gray-400 mb-2 truncate" title="No task selected">
+                No task selected
+            </div>
+
+            <div id="timer-display" class="timer-text digital-font text-8xl md:text-9xl font-bold tracking-widest mb-10">
+                25:00
+            </div>
+
+            <div class="flex space-x-4 justify-center mb-8">
     <div class="flex flex-col items-center justify-center h-screen w-full p-4 pt-20">
 
         <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
@@ -172,6 +310,20 @@
                 Session: 1 of 4
             </div>
         </div>
+
+        <div class="flex-1 w-full max-w-lg p-8">
+            <div class="w-full bg-slate-900 p-6 rounded-lg shadow-2xl">
+                <h2 class="text-2xl font-bold mb-4">Task List</h2>
+                <div class="flex space-x-2 mb-4">
+                    <input type="text" id="new-task-input" class="task-input" placeholder="Add a new task...">
+                    <button id="add-task-btn" class="btn-primary px-5" title="Add Task">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                <ul id="task-list" class="list-none p-0 max-h-80 overflow-y-auto">
+                    </ul>
+            </div>
+        </div>
     </div>
 
 
@@ -185,6 +337,8 @@
                 <div><label for="sessions">Sessions</label><input type="number" id="sessions" min="1"></div>
             </div>
             <div class="mt-6 flex justify-end space-x-4">
+                <button id="close-settings-btn" class="btn btn-secondary">Cancel</button>
+                <button id="save-settings-btn" class="btn btn-primary" style="background-color: var(--color-accent-dark);">Save</button>
                 <button id="close-settings-btn" class="btn btn-secondary py-2 px-6">Cancel</button>
                 <button id="save-settings-btn" class="btn btn-primary py-2 px-6">Save</button>
             </div>
@@ -213,6 +367,12 @@
         const longTimeInput = document.getElementById('long-time');
         const sessionsInput = document.getElementById('sessions');
 
+        // --- Task DOM Elements ---
+        const newTaskInput = document.getElementById('new-task-input');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const taskList = document.getElementById('task-list');
+
+        // --- Timer State ---
         // --- Timer State (Defaults to standard Pomodoro) ---
         let POMODORO_TIMES = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
         let SESSIONS_UNTIL_LONG_BREAK = 4;
@@ -223,6 +383,10 @@
         let currentTimeInSeconds = POMODORO_TIMES.focus;
         let sessionCount = 0;
         let hasNotificationPermission = false;
+
+        // --- Task State ---
+        let tasks = [];
+        let currentTaskId = null;
 
         // --- Timer Functions ---
         function formatTime(seconds) {
@@ -239,6 +403,7 @@
 
         function startTimer() {
             isTimerRunning = true;
+            // 14. UPDATED: Change to icon
             startPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
 
             timerInterval = setInterval(() => {
@@ -249,6 +414,9 @@
                     clearInterval(timerInterval);
                     isTimerRunning = false;
                     alarmSound.play();
+                    if (currentMode === 'focus' && currentTaskId) {
+                        incrementTaskPomodoro(currentTaskId);
+                    }
                     autoSwitchMode();
                 }
             }, 1000);
@@ -256,6 +424,7 @@
 
         function pauseTimer() {
             isTimerRunning = false;
+            // 15. UPDATED: Change to icon
             startPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             clearInterval(timerInterval);
         }
@@ -308,6 +477,7 @@
             currentTimeInSeconds = POMODORO_TIMES[mode];
             updateTimerDisplay();
             
+            // 16. UPDATED: Use class on body for theming
             bodyElement.classList.remove('state-focus', 'state-break');
             if (mode === 'focus') {
                 bodyElement.classList.add('state-focus');
@@ -328,6 +498,9 @@
 
         function skipSession() {
             pauseTimer();
+            if (currentMode === 'focus' && currentTaskId) {
+                incrementTaskPomodoro(currentTaskId);
+            }
             autoSwitchMode();
         }
 
@@ -372,6 +545,123 @@
             if (settings) { applySettings(settings); }
         }
 
+        // --- Task Functions ---
+        
+        /** 17. UPDATED: Renders tasks with new HTML and icons */
+        function renderTasks() {
+            taskList.innerHTML = '';
+            const activeTasks = tasks.filter(task => !task.completed);
+
+            if (activeTasks.length === 0) {
+                taskList.innerHTML = `<li class="text-center p-3" style="color: var(--color-text-dim);">No tasks yet.</li>`;
+                return;
+            }
+
+            activeTasks.forEach(task => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.dataset.id = task.id;
+                
+                if (task.id === currentTaskId) {
+                    li.classList.add('selected');
+                }
+
+                li.innerHTML = `
+                    <span class="task-name">${task.name}</span>
+                    <div class="flex items-center">
+                        <span class="task-pomodoros digital-font">[${task.pomodoros}]</span>
+                        <div class="task-actions flex space-x-1">
+                            <button class="btn-icon select-task-btn" title="Focus on this task">
+                                <i class="fa-solid fa-play-circle"></i>
+                            </button>
+                            <button class="btn-icon complete-task-btn" title="Complete task">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                            <button class="btn-icon delete-task-btn" title="Delete task">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                taskList.appendChild(li);
+            });
+        }
+
+        function addTask() {
+            const name = newTaskInput.value.trim();
+            if (name) {
+                const newTask = {
+                    id: Date.now().toString(),
+                    name: name,
+                    completed: false,
+                    pomodoros: 0
+                };
+                tasks.unshift(newTask); // Add to the top
+                saveTasks();
+                renderTasks();
+                newTaskInput.value = '';
+            }
+        }
+
+        function selectTask(id) {
+            currentTaskId = id;
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                currentTaskDisplay.textContent = `Focusing on: ${task.name}`;
+                currentTaskDisplay.title = `Focusing on: ${task.name}`;
+            }
+            renderTasks();
+        }
+
+        function completeTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = true;
+                if (currentTaskId === id) {
+                    currentTaskId = null;
+                    currentTaskDisplay.textContent = 'No task selected';
+                    currentTaskDisplay.title = 'No task selected';
+                }
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        /** 19. NEW: Delete Task Function */
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            if (currentTaskId === id) {
+                currentTaskId = null;
+                currentTaskDisplay.textContent = 'No task selected';
+                currentTaskDisplay.title = 'No task selected';
+            }
+            saveTasks();
+            renderTasks();
+        }
+
+        function incrementTaskPomodoro(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.pomodoros++;
+                saveTasks();
+                renderTasks();
+            }
+        }
+
+        function saveTasks() {
+            localStorage.setItem('pomodoroTasks', JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            const savedTasks = JSON.parse(localStorage.getItem('pomodoroTasks'));
+            if (savedTasks) {
+                tasks = savedTasks;
+            }
+            // On load, don't show completed tasks
+            tasks = tasks.filter(task => !task.completed);
+            renderTasks();
+        }
+
         // --- Event Listeners ---
         startPauseBtn.addEventListener('click', toggleStartPause);
         skipBtn.addEventListener('click', skipSession);
@@ -383,6 +673,22 @@
         closeSettingsBtn.addEventListener('click', closeSettings);
         saveSettingsBtn.addEventListener('click', saveSettings);
 
+        addTaskBtn.addEventListener('click', addTask);
+        newTaskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') { addTask(); }
+        });
+
+        // Task list event delegation
+        taskList.addEventListener('click', (e) => {
+            const taskItem = e.target.closest('.task-item');
+            if (!taskItem) return;
+            const id = taskItem.dataset.id;
+            
+            if (e.target.closest('.select-task-btn')) { selectTask(id); }
+            if (e.target.closest('.complete-task-btn')) { completeTask(id); }
+            if (e.target.closest('.delete-task-btn')) { deleteTask(id); } // Handle delete
+        });
+
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -391,8 +697,9 @@
         });
 
         // --- Initial Setup ---
-        loadSettings(); // Load saved settings (if any)
-        setMode('focus'); // Start on 'focus' mode
+        loadSettings();
+        loadTasks();
+        setMode('focus');
 
     </script>
 </body>
