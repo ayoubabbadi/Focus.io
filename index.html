@@ -5,128 +5,172 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Focus Timer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Default: Neutral */
-            --bg-color: #000000;
-            --text-glow: 0 0 5px #c8c8c8, 0 0 10px #c8c8c8, 0 0 20px #c8c8c8;
-            --text-glow-dim: 0 0 5px #555, 0 0 10px #555;
+            /* 1. NEW: Clean Font Palette */
             --font-digital: 'Orbitron', sans-serif;
-            --font-ui: 'Roboto', sans-serif;
+            --font-ui: 'Manrope', sans-serif;
+
+            /* 2. NEW: Clean Color Palette (Light Theme) */
+            --color-bg: #f9fafb; /* bg-gray-50 */
+            --color-text: #1f2937; /* text-gray-800 */
+            --color-text-dim: #6b7280; /* text-gray-500 */
+            --color-border: #e5e7eb; /* border-gray-200 */
+            
+            /* 3. NEW: Creative Gradient Accents (Default) */
+            --color-accent-start: #c4b5fd; /* violet-300 */
+            --color-accent-end: #f0abfc; /* fuchsia-300 */
         }
 
+        /* 4. NEW: State-based Theming */
+        body.state-focus {
+            --color-bg: #fef2f2; /* bg-red-50 */
+            --color-accent-start: #fda4af; /* rose-300 */
+            --color-accent-end: #fb923c; /* orange-400 */
+        }
+        body.state-break {
+            --color-bg: #eff6ff; /* bg-blue-50 */
+            --color-accent-start: #93c5fd; /* blue-300 */
+            --color-accent-end: #5eead4; /* teal-300 */
+        }
+
+        /* 5. NEW: Base Styles */
         body {
-            font-family: var(--font-ui); /* Use Roboto for UI */
+            font-family: var(--font-ui);
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            transition: background-color 0.5s ease;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            cursor: default;
             user-select: none;
-            background-color: var(--bg-color);
-            transition: background-color 0.5s ease;
+        }
+
+        /* 6. NEW: Timer & Digital Font Styling */
+        .digital-font {
+            font-family: var(--font-digital);
+        }
+        .timer-text {
+            /* Apply gradient to text */
+            background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: all 0.5s ease;
+        }
+        .session-text {
+            color: var(--color-text-dim);
+            transition: all 0.5s ease;
+        }
+        .app-title {
+             background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: all 0.5s ease;
+        }
+
+        /* 7. NEW: Soft Button Styles */
+        .btn {
+            @apply rounded-lg font-semibold transition-all;
+        }
+        .btn-primary {
+            background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            color: white;
+            box-shadow: 0 4px 20px -5px var(--color-accent-start);
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 6px 25px -5px var(--color-accent-start);
+        }
+        .btn-secondary {
+            background-color: #ffffff;
+            color: var(--color-text-dim);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 10px -5px #0000001a;
+        }
+        .btn-secondary:hover {
+            background-color: #f9fafb; /* bg-gray-50 */
+            color: var(--color-text);
+        }
+        .btn-icon {
+            color: var(--color-text-dim);
+            @apply p-3 text-lg;
+        }
+        .btn-icon:hover {
+            color: var(--color-text);
         }
         
-        body.state-focus { --bg-color: #2a0000; }
-        body.state-break { --bg-color: #001f3f; }
-
-        .timer-text {
-            font-family: var(--font-digital); /* Use Orbitron for timer */
-            text-shadow: var(--text-glow);
-            transition: text-shadow 0.5s ease;
-        }
-        body.state-focus .timer-text { --text-glow: 0 0 5px #ff4d4d, 0 0 10px #ff4d4d, 0 0 20px #ff4d4d; }
-        body.state-break .timer-text { --text-glow: 0 0 5px #00aaff, 0 0 10px #00aaff, 0 0 20px #00aaff; }
-
-        .session-text {
-            font-family: var(--font-digital);
-            text-shadow: var(--text-glow-dim);
-            transition: text-shadow 0.5s ease;
-        }
-        body.state-focus .session-text { --text-glow-dim: 0 0 5px #803333; }
-        body.state-break .session-text { --text-glow-dim: 0 0 5px #335b80; }
-
+        /* 8. NEW: Mode Button Styles (Pill Shape) */
         .mode-btn {
-            @apply bg-gray-800 text-gray-400 font-bold py-2 px-6 rounded-lg uppercase tracking-wider text-lg transition-all;
-            font-family: var(--font-digital);
+            background-color: transparent;
+            color: var(--color-text-dim);
+            @apply py-2 px-6 rounded-full uppercase tracking-wider text-sm font-bold;
         }
-        .mode-btn:hover { @apply bg-gray-700 text-white; }
-        .mode-btn-active { @apply bg-white text-black; }
-
+        .mode-btn:hover {
+            color: var(--color-text);
+        }
+        .mode-btn-active {
+            background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            color: white !important;
+            box-shadow: 0 4px 20px -5px var(--color-accent-start);
+        }
+        
+        /* 9. NEW: Modal Styles */
         .modal-overlay { @apply fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center; }
-        .modal-content { @apply bg-gray-900 p-8 rounded-lg shadow-xl text-left; }
-        .modal-content label { @apply block text-gray-400 text-sm font-bold mb-2; }
-        .modal-content input { @apply bg-gray-700 text-white p-2 rounded w-full mb-4; }
+        .modal-content {
+            background-color: #ffffff; /* White background */
+            @apply p-8 rounded-lg shadow-xl text-left;
+        }
+        .modal-content label { @apply block text-gray-500 text-sm font-bold mb-2; }
+        .modal-content input {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            @apply text-gray-800 p-2 rounded w-full mb-4 border border-gray-300;
+        }
 
-        /* --- New Task List Styles --- */
-        #task-container {
-            @apply w-full max-w-md bg-gray-900 bg-opacity-50 p-6 rounded-lg shadow-lg mt-8;
-        }
-        #new-task-input {
-            @apply w-full bg-gray-800 text-white p-3 rounded-lg border-2 border-gray-700 focus:outline-none focus:border-blue-500;
-            font-family: var(--font-ui);
-        }
-        #task-list { @apply list-none p-0 mt-4 max-h-48 overflow-y-auto; }
-        .task-item {
-            @apply flex items-center justify-between p-3 bg-gray-800 rounded-lg mb-2 transition-all;
-        }
-        .task-item.completed .task-name { @apply line-through text-gray-500; }
-        .task-item.selected { @apply bg-blue-900; }
-
-        .task-name { @apply text-lg; }
-        .task-pomodoros { @apply text-sm text-gray-400 mr-2; font-family: var(--font-digital); }
-        .task-actions button { @apply bg-gray-700 hover:bg-gray-600 p-2 rounded-md ml-1; }
-        .task-actions button:hover { @apply text-white; }
     </style>
 </head>
 
-<body class="text-white flex items-center justify-center h-screen overflow-hidden">
-    <audio id="alarm-sound" src="data:audio/mpeg;base64,..."></audio>
+<body class="overflow-hidden">
 
-    <button id="settings-btn" class="absolute top-4 right-6 text-3xl opacity-50 hover:opacity-100 transition-opacity">
-        ⚙️
-    </button>
+    <audio id="alarm-sound" src="https://actions.google.com/sounds/v1/impacts/ringing_vessel_solid.ogg" preload="auto"></audio>
+    
+    <header class="flex justify-between items-center p-4 w-full absolute top-0 left-0">
+        <h1 class="text-xl font-bold digital-font app-title">
+            <i class="fa-solid fa-bolt-lightning"></i>
+            focus.io
+        </h1>
+        <button id="settings-btn" class="btn-icon text-xl" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+    </header>
 
-    <div class="flex flex-col items-center justify-center">
+    <div class="flex flex-col items-center justify-center h-screen w-full p-4 pt-20">
 
-        <div class="text-center p-4">
-            <div id="current-task-display" class="h-8 text-xl text-gray-400 mb-2 truncate" title="No task selected">
-                No task selected
+        <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
+            <div class="flex space-x-2 md:space-x-4 justify-center mb-12 bg-gray-200 p-2 rounded-full">
+                <button id="focus-btn" class="mode-btn digital-font mode-btn-active">Focus</button>
+                <button id="short-btn" class="mode-btn digital-font">Short Break</button>
+                <button id="long-btn" class="mode-btn digital-font">Long Break</button>
             </div>
-            
-            <div class="flex space-x-2 md:space-x-4 justify-center mb-8">
-                <button id="focus-btn" class="mode-btn mode-btn-active">Focus</button>
-                <button id="short-btn" class="mode-btn">Short Break</button>
-                <button id="long-btn" class="mode-btn">Long Break</button>
-            </div>
 
-            <div id="timer-display" class="timer-text text-8xl md:text-9xl font-bold tracking-widest mb-10">
+            <div id="timer-display" class="timer-text digital-font text-8xl md:text-9xl font-bold tracking-widest mb-12">
                 25:00
             </div>
 
-            <div class="flex space-x-4 justify-center mb-8">
-                <button id="start-pause-btn" class="bg-white hover:bg-gray-200 text-black font-bold py-3 px-12 rounded-lg uppercase tracking-wider text-2xl transition-all">
-                    Start
+            <div class="flex space-x-4 justify-center mb-12">
+                <button id="start-pause-btn" class="btn btn-primary text-4xl w-24 h-24 rounded-full flex items-center justify-center" title="Start (Space)">
+                    <i class="fas fa-play"></i>
                 </button>
-                <button id="skip-btn" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg uppercase tracking-wider text-2xl transition-all" title="Skip to next session">
-                    »
+                <button id="skip-btn" class="btn btn-secondary text-2xl w-24 h-24 rounded-full flex items-center justify-center" title="Skip Session">
+                    <i class="fas fa-forward-step"></i>
                 </button>
             </div>
 
-            <div id="session-count" class="session-text text-gray-400 text-xl tracking-wider">
+            <div id="session-count" class="session-text digital-font text-xl tracking-wider">
                 Session: 1 of 4
             </div>
-        </div>
-
-        <div id="task-container">
-            <div class="flex space-x-2">
-                <input type="text" id="new-task-input" placeholder="Add a new task...">
-                <button id="add-task-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold p-3 rounded-lg">
-                    Add
-                </button>
-            </div>
-            <ul id="task-list">
-                </ul>
         </div>
     </div>
 
@@ -141,8 +185,8 @@
                 <div><label for="sessions">Sessions</label><input type="number" id="sessions" min="1"></div>
             </div>
             <div class="mt-6 flex justify-end space-x-4">
-                <button id="close-settings-btn" class="bg-gray-600 hover:bg-gray-500 text-white py-2 px-6 rounded-lg">Cancel</button>
-                <button id="save-settings-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg">Save</button>
+                <button id="close-settings-btn" class="btn btn-secondary py-2 px-6">Cancel</button>
+                <button id="save-settings-btn" class="btn btn-primary py-2 px-6">Save</button>
             </div>
         </div>
     </div>
@@ -158,7 +202,6 @@
         const sessionCountDisplay = document.getElementById('session-count');
         const alarmSound = document.getElementById('alarm-sound');
         const bodyElement = document.body;
-        const currentTaskDisplay = document.getElementById('current-task-display');
 
         // --- Settings Modal Elements ---
         const settingsBtn = document.getElementById('settings-btn');
@@ -170,14 +213,10 @@
         const longTimeInput = document.getElementById('long-time');
         const sessionsInput = document.getElementById('sessions');
 
-        // --- New Task DOM Elements ---
-        const newTaskInput = document.getElementById('new-task-input');
-        const addTaskBtn = document.getElementById('add-task-btn');
-        const taskList = document.getElementById('task-list');
-
-        // --- Timer State ---
+        // --- Timer State (Defaults to standard Pomodoro) ---
         let POMODORO_TIMES = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
         let SESSIONS_UNTIL_LONG_BREAK = 4;
+        
         let timerInterval;
         let isTimerRunning = false;
         let currentMode = 'focus';
@@ -185,11 +224,7 @@
         let sessionCount = 0;
         let hasNotificationPermission = false;
 
-        // --- New Task State ---
-        let tasks = [];
-        let currentTaskId = null;
-
-        // --- Timer Functions (Unchanged) ---
+        // --- Timer Functions ---
         function formatTime(seconds) {
             const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
             const remainingSeconds = String(seconds % 60).padStart(2, '0');
@@ -204,13 +239,7 @@
 
         function startTimer() {
             isTimerRunning = true;
-            startPauseBtn.textContent = 'Pause';
-            bodyElement.classList.remove('state-focus', 'state-break');
-            if (currentMode === 'focus') {
-                bodyElement.classList.add('state-focus');
-            } else {
-                bodyElement.classList.add('state-break');
-            }
+            startPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
 
             timerInterval = setInterval(() => {
                 currentTimeInSeconds--;
@@ -220,10 +249,6 @@
                     clearInterval(timerInterval);
                     isTimerRunning = false;
                     alarmSound.play();
-                    // --- Updated: Increment Pomodoro on task ---
-                    if (currentMode === 'focus' && currentTaskId) {
-                        incrementTaskPomodoro(currentTaskId);
-                    }
                     autoSwitchMode();
                 }
             }, 1000);
@@ -231,7 +256,7 @@
 
         function pauseTimer() {
             isTimerRunning = false;
-            startPauseBtn.textContent = 'Start';
+            startPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             clearInterval(timerInterval);
         }
 
@@ -255,7 +280,7 @@
 
         function sendNotification(nextMode) {
             if (Notification.permission !== 'granted') return;
-            const title = "Pomodoro Timer";
+            const title = "Focus Timer";
             let body;
             if (nextMode === 'focus') { body = "Time to focus!"; }
             else if (nextMode === 'short') { body = "Time for a short break!"; }
@@ -274,7 +299,7 @@
             }
             sendNotification(nextMode);
             setMode(nextMode);
-            startTimer();
+            startTimer(); // Auto-start the next session
         }
 
         function setMode(mode) {
@@ -282,30 +307,32 @@
             pauseTimer();
             currentTimeInSeconds = POMODORO_TIMES[mode];
             updateTimerDisplay();
+            
             bodyElement.classList.remove('state-focus', 'state-break');
+            if (mode === 'focus') {
+                bodyElement.classList.add('state-focus');
+            } else {
+                bodyElement.classList.add('state-break');
+            }
+            
             focusBtn.classList.toggle('mode-btn-active', mode === 'focus');
             shortBtn.classList.toggle('mode-btn-active', mode === 'short');
             longBtn.classList.toggle('mode-btn-active', mode === 'long');
+
             if (mode === 'focus') {
-                bodyElement.classList.add('state-focus');
                 updateSessionDisplay();
             } else {
-                bodyElement.classList.add('state-break');
                 sessionCountDisplay.textContent = 'Time for a break!';
             }
         }
 
         function skipSession() {
             pauseTimer();
-            // Manually increment pomodoro if skipping a focus session
-            if (currentMode === 'focus' && currentTaskId) {
-                incrementTaskPomodoro(currentTaskId);
-            }
             autoSwitchMode();
         }
 
         function requestNotificationPermission() {
-            if (!('Notification' in window)) return;
+            if (!('Notification'in window)) return;
             if (Notification.permission !== 'denied' && Notification.permission !== 'granted') {
                 Notification.requestPermission().then(p => { hasNotificationPermission = (p === 'granted'); });
             } else {
@@ -313,7 +340,7 @@
             }
         }
 
-        // --- Settings Logic (Unchanged) ---
+        // --- Settings Logic ---
         function openSettings() {
             focusTimeInput.value = POMODORO_TIMES.focus / 60;
             shortTimeInput.value = POMODORO_TIMES.short / 60;
@@ -345,111 +372,6 @@
             if (settings) { applySettings(settings); }
         }
 
-        // --- New Task Functions ---
-        
-        /** Renders the entire task list */
-        function renderTasks() {
-            taskList.innerHTML = ''; // Clear existing list
-            
-            if (tasks.length === 0) {
-                taskList.innerHTML = '<li class="text-gray-500 text-center p-3">No tasks yet.</li>';
-                return;
-            }
-
-            tasks.forEach(task => {
-                if (task.completed) return; // Don't show completed tasks
-
-                const li = document.createElement('li');
-                li.className = 'task-item';
-                li.dataset.id = task.id;
-                
-                if (task.id === currentTaskId) {
-                    li.classList.add('selected');
-                }
-
-                li.innerHTML = `
-                    <span class="task-name">${task.name}</span>
-                    <div class="flex items-center">
-                        <span class="task-pomodoros">[${task.pomodoros}]</span>
-                        <div class="task-actions">
-                            <button class="select-task-btn" title="Focus on this task">🎯</button>
-                            <button class="complete-task-btn" title="Complete task">✔️</button>
-                        </div>
-                    </div>
-                `;
-                taskList.appendChild(li);
-            });
-        }
-
-        /** Adds a new task */
-        function addTask() {
-            const name = newTaskInput.value.trim();
-            if (name) {
-                const newTask = {
-                    id: Date.now().toString(),
-                    name: name,
-                    completed: false,
-                    pomodoros: 0
-                };
-                tasks.push(newTask);
-                saveTasks();
-                renderTasks();
-                newTaskInput.value = '';
-            }
-        }
-
-        /** Selects a task to focus on */
-        function selectTask(id) {
-            currentTaskId = id;
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                currentTaskDisplay.textContent = `Focusing on: ${task.name}`;
-                currentTaskDisplay.title = `Focusing on: ${task.name}`;
-            }
-            renderTasks(); // Re-render to show selection
-        }
-
-        /** Marks a task as complete */
-        function completeTask(id) {
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                task.completed = true;
-                if (currentTaskId === id) {
-                    currentTaskId = null;
-                    currentTaskDisplay.textContent = 'No task selected';
-                    currentTaskDisplay.title = 'No task selected';
-                }
-                saveTasks();
-                renderTasks();
-            }
-        }
-
-        /** Increments the pomodoro count for a task */
-        function incrementTaskPomodoro(id) {
-            const task = tasks.find(t => t.id === id);
-            if (task) {
-                task.pomodoros++;
-                saveTasks();
-                renderTasks();
-            }
-        }
-
-        /** Saves all tasks to localStorage */
-        function saveTasks() {
-            localStorage.setItem('pomodoroTasks', JSON.stringify(tasks));
-        }
-
-        /** Loads tasks from localStorage */
-        function loadTasks() {
-            const savedTasks = JSON.parse(localStorage.getItem('pomodoroTasks'));
-            if (savedTasks) {
-                tasks = savedTasks;
-            }
-            // Filter out completed tasks from the active list on load
-            tasks = tasks.filter(task => !task.completed);
-            renderTasks();
-        }
-
         // --- Event Listeners ---
         startPauseBtn.addEventListener('click', toggleStartPause);
         skipBtn.addEventListener('click', skipSession);
@@ -457,43 +379,19 @@
         shortBtn.addEventListener('click', () => setMode('short'));
         longBtn.addEventListener('click', () => setMode('long'));
 
-        // Settings
         settingsBtn.addEventListener('click', openSettings);
         closeSettingsBtn.addEventListener('click', closeSettings);
         saveSettingsBtn.addEventListener('click', saveSettings);
 
-        // Tasks
-        addTaskBtn.addEventListener('click', addTask);
-        newTaskInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') { addTask(); }
-        });
-
-        // Task list event delegation
-        taskList.addEventListener('click', (e) => {
-            const target = e.target;
-            const taskItem = target.closest('.task-item');
-            if (!taskItem) return;
-            
-            const id = taskItem.dataset.id;
-            
-            if (target.closest('.select-task-btn')) {
-                selectTask(id);
-            }
-            if (target.closest('.complete-task-btn')) {
-                completeTask(id);
-            }
-        });
-
         window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && document.activeElement !== newTaskInput) {
+            if (e.code === 'Space') {
                 e.preventDefault();
                 toggleStartPause();
             }
         });
 
         // --- Initial Setup ---
-        loadSettings(); // Load saved timer settings
-        loadTasks(); // Load saved tasks
+        loadSettings(); // Load saved settings (if any)
         setMode('focus'); // Start on 'focus' mode
 
     </script>
