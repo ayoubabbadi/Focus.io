@@ -38,12 +38,43 @@
             --color-accent-glow: 0 0 15px #2563eb;
         }
 
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 1. NEW: Clean Font Palette */
+            --font-digital: 'Orbitron', sans-serif;
+            --font-ui: 'Manrope', sans-serif;
+
+            /* 2. NEW: Clean Color Palette (Light Theme) */
+            --color-bg: #f9fafb; /* bg-gray-50 */
+            --color-text: #1f2937; /* text-gray-800 */
+            --color-text-dim: #6b7280; /* text-gray-500 */
+            --color-border: #e5e7eb; /* border-gray-200 */
+            
+            /* 3. NEW: Creative Gradient Accents (Default) */
+            --color-accent-start: #c4b5fd; /* violet-300 */
+            --color-accent-end: #f0abfc; /* fuchsia-300 */
+        }
+
+        /* 4. NEW: State-based Theming */
+        body.state-focus {
+            --color-bg: #fef2f2; /* bg-red-50 */
+            --color-accent-start: #fda4af; /* rose-300 */
+            --color-accent-end: #fb923c; /* orange-400 */
+        }
+        body.state-break {
+            --color-bg: #eff6ff; /* bg-blue-50 */
+            --color-accent-start: #93c5fd; /* blue-300 */
+            --color-accent-end: #5eead4; /* teal-300 */
+        }
+
         /* 5. NEW: Base Styles */
         body {
             font-family: var(--font-ui);
             background-color: var(--color-bg);
             color: var(--color-text);
             transition: background-color 0.4s ease;
+            transition: background-color 0.5s ease;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             user-select: none;
@@ -96,6 +127,61 @@
             background-color: var(--color-bg-light);
             color: var(--color-text-dim);
             @apply py-2 px-6 rounded-lg uppercase tracking-wider text-sm;
+            /* Apply gradient to text */
+            background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: all 0.5s ease;
+        }
+        .session-text {
+            color: var(--color-text-dim);
+            transition: all 0.5s ease;
+        }
+        .app-title {
+             background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: all 0.5s ease;
+        }
+
+        /* 7. NEW: Soft Button Styles */
+        .btn {
+            @apply rounded-lg font-semibold transition-all;
+        }
+        .btn-primary {
+            background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            color: white;
+            box-shadow: 0 4px 20px -5px var(--color-accent-start);
+        }
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 6px 25px -5px var(--color-accent-start);
+        }
+        .btn-secondary {
+            background-color: #ffffff;
+            color: var(--color-text-dim);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 10px -5px #0000001a;
+        }
+        .btn-secondary:hover {
+            background-color: #f9fafb; /* bg-gray-50 */
+            color: var(--color-text);
+        }
+        .btn-icon {
+            color: var(--color-text-dim);
+            @apply p-3 text-lg;
+        }
+        .btn-icon:hover {
+            color: var(--color-text);
+        }
+        
+        /* 8. NEW: Mode Button Styles (Pill Shape) */
+        .mode-btn {
+            background-color: transparent;
+            color: var(--color-text-dim);
+            @apply py-2 px-6 rounded-full uppercase tracking-wider text-sm font-bold;
         }
         .mode-btn:hover {
             color: var(--color-text);
@@ -144,6 +230,21 @@
         .modal-content input {
             background-color: var(--color-bg-lighter);
             @apply text-white p-2 rounded w-full mb-4 border border-gray-600;
+            background-image: linear-gradient(to right, var(--color-accent-start), var(--color-accent-end));
+            color: white !important;
+            box-shadow: 0 4px 20px -5px var(--color-accent-start);
+        }
+        
+        /* 9. NEW: Modal Styles */
+        .modal-overlay { @apply fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center; }
+        .modal-content {
+            background-color: #ffffff; /* White background */
+            @apply p-8 rounded-lg shadow-xl text-left;
+        }
+        .modal-content label { @apply block text-gray-500 text-sm font-bold mb-2; }
+        .modal-content input {
+            background-color: #f3f4f6; /* bg-gray-100 */
+            @apply text-gray-800 p-2 rounded w-full mb-4 border border-gray-300;
         }
 
     </style>
@@ -156,6 +257,8 @@
     <header class="flex justify-between items-center p-4 w-full absolute top-0 left-0">
         <h1 class="text-xl font-bold digital-font">
             <i class="fa-solid fa-bolt-lightning" style="color: var(--color-accent); transition: color 0.4s ease;"></i>
+        <h1 class="text-xl font-bold digital-font app-title">
+            <i class="fa-solid fa-bolt-lightning"></i>
             focus.io
         </h1>
         <button id="settings-btn" class="btn-icon text-xl" title="Settings">
@@ -181,6 +284,20 @@
             </div>
 
             <div class="flex space-x-4 justify-center mb-8">
+    <div class="flex flex-col items-center justify-center h-screen w-full p-4 pt-20">
+
+        <div class="flex-1 flex flex-col items-center justify-center text-center p-8">
+            <div class="flex space-x-2 md:space-x-4 justify-center mb-12 bg-gray-200 p-2 rounded-full">
+                <button id="focus-btn" class="mode-btn digital-font mode-btn-active">Focus</button>
+                <button id="short-btn" class="mode-btn digital-font">Short Break</button>
+                <button id="long-btn" class="mode-btn digital-font">Long Break</button>
+            </div>
+
+            <div id="timer-display" class="timer-text digital-font text-8xl md:text-9xl font-bold tracking-widest mb-12">
+                25:00
+            </div>
+
+            <div class="flex space-x-4 justify-center mb-12">
                 <button id="start-pause-btn" class="btn btn-primary text-4xl w-24 h-24 rounded-full flex items-center justify-center" title="Start (Space)">
                     <i class="fas fa-play"></i>
                 </button>
@@ -222,6 +339,8 @@
             <div class="mt-6 flex justify-end space-x-4">
                 <button id="close-settings-btn" class="btn btn-secondary">Cancel</button>
                 <button id="save-settings-btn" class="btn btn-primary" style="background-color: var(--color-accent-dark);">Save</button>
+                <button id="close-settings-btn" class="btn btn-secondary py-2 px-6">Cancel</button>
+                <button id="save-settings-btn" class="btn btn-primary py-2 px-6">Save</button>
             </div>
         </div>
     </div>
@@ -237,7 +356,6 @@
         const sessionCountDisplay = document.getElementById('session-count');
         const alarmSound = document.getElementById('alarm-sound');
         const bodyElement = document.body;
-        const currentTaskDisplay = document.getElementById('current-task-display');
 
         // --- Settings Modal Elements ---
         const settingsBtn = document.getElementById('settings-btn');
@@ -255,8 +373,10 @@
         const taskList = document.getElementById('task-list');
 
         // --- Timer State ---
+        // --- Timer State (Defaults to standard Pomodoro) ---
         let POMODORO_TIMES = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
         let SESSIONS_UNTIL_LONG_BREAK = 4;
+        
         let timerInterval;
         let isTimerRunning = false;
         let currentMode = 'focus';
@@ -348,7 +468,7 @@
             }
             sendNotification(nextMode);
             setMode(nextMode);
-            startTimer();
+            startTimer(); // Auto-start the next session
         }
 
         function setMode(mode) {
@@ -385,7 +505,7 @@
         }
 
         function requestNotificationPermission() {
-            if (!('Notification' in window)) return;
+            if (!('Notification'in window)) return;
             if (Notification.permission !== 'denied' && Notification.permission !== 'granted') {
                 Notification.requestPermission().then(p => { hasNotificationPermission = (p === 'granted'); });
             } else {
@@ -570,7 +690,7 @@
         });
 
         window.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && document.activeElement !== newTaskInput) {
+            if (e.code === 'Space') {
                 e.preventDefault();
                 toggleStartPause();
             }
